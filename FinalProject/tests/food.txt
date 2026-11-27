@@ -1,0 +1,7 @@
+# build a tiny document
+mkdir food
+cd food
+new menu.txt
+open menu.txt
+as alice add "Soup of the day."
+save

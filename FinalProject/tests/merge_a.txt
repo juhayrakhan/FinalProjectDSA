@@ -1,0 +1,24 @@
+new recipes.txt
+open recipes.txt
+as alice add "Pancakes need eggs and flour."
+as bob add "Serve with honey."
+as alice add "Cook five minutes per side."
+save
+fork recipes.txt vegan.txt
+open vegan.txt
+as carol edit 2 "Serve with maple syrup."
+as carol insert 4 "Top with berries."
+save
+open recipes.txt
+as alice add "Best served warm."
+save
+log
+view c2
+view c3
+common recipes.txt vegan.txt
+search honey
+search pan*
+merge vegan.txt into recipes.txt
+log
+show
+merge recipes.txt into vegan.txt

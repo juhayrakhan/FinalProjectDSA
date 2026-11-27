@@ -18,6 +18,31 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="FinalProject\basic structures\avl.h" />
+    <ClInclude Include="FinalProject\basic structures\bloom.h" />
+    <ClInclude Include="FinalProject\basic structures\bplus.h" />
+    <ClInclude Include="FinalProject\core\engine.h" />
+    <ClInclude Include="FinalProject\core\part_core.h" />
+    <ClInclude Include="FinalProject\core\part_doc.h" />
+    <ClInclude Include="FinalProject\core\part_explorer.h" />
+    <ClInclude Include="FinalProject\core\part_history.h" />
+    <ClInclude Include="FinalProject\core\part_search.h" />
+    <ClInclude Include="FinalProject\core\part_tools.h" />
+    <ClInclude Include="FinalProject\ds.h" />
+    <ClInclude Include="FinalProject\tracker.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="FinalProject\main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="FinalProject\tests\bin.txt" />
+    <Text Include="FinalProject\tests\food.txt" />
+    <Text Include="FinalProject\tests\merge_a.txt" />
+    <Text Include="FinalProject\tests\merge_b.txt" />
+    <Text Include="FinalProject\tests\merge_c.txt" />
+    <Text Include="FinalProject\tests\misc.txt" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>18.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
@@ -138,23 +163,6 @@
       <EnableSegmentHeap>true</EnableSegmentHeap>
     </Manifest>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClInclude Include="..\basic structures\avl.h" />
-    <ClInclude Include="..\basic structures\bloom.h" />
-    <ClInclude Include="..\basic structures\bplus.h" />
-    <ClInclude Include="..\core\engine.h" />
-    <ClInclude Include="..\core\part_core.h" />
-    <ClInclude Include="..\core\part_doc.h" />
-    <ClInclude Include="..\core\part_explorer.h" />
-    <ClInclude Include="..\core\part_history.h" />
-    <ClInclude Include="..\core\part_search.h" />
-    <ClInclude Include="..\core\part_tools.h" />
-    <ClInclude Include="..\ds.h" />
-    <ClInclude Include="..\tracker.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\main.cpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

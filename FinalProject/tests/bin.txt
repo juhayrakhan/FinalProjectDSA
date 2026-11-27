@@ -1,0 +1,27 @@
+mkdir university
+cd university
+mkdir assignments
+cd assignments
+new draft.txt
+cd ..
+rm assignments
+bin
+new notes.txt
+star notes.txt
+ls
+cd /
+mkdir a
+cd a
+mkdir b
+cd b
+mkdir c
+cd c
+new x.txt
+open x.txt
+cd /
+restore 1
+restore 7
+emptybin
+new
+frobnicate
+cd ..

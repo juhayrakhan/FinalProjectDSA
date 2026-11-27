@@ -1,0 +1,19 @@
+new recipes.txt
+open recipes.txt
+as alice add "Pancakes need eggs and flour."
+as bob add "Serve with honey."
+as alice add "Cook five minutes per side."
+save
+fork recipes.txt vegan.txt
+open vegan.txt
+as carol edit 1 "Pancakes need flax and flour."
+as carol delete 3
+save
+open recipes.txt
+as alice edit 1 "Pancakes need eggs, flour and milk."
+as alice edit 3 "Cook four minutes per side."
+save
+merge vegan.txt into recipes.txt
+take
+keep
+show

@@ -1,0 +1,57 @@
+mkdir food
+cd food
+new recipes.txt
+new breakfast.txt
+new shopping.txt
+new market.txt
+new dessert.txt
+new notes.txt
+open recipes.txt
+as a add "See [[breakfast.txt]] and [[shopping.txt]]"
+save
+open breakfast.txt
+as a add "Go [[recipes.txt]]"
+save
+open shopping.txt
+as a add "[[market.txt]]"
+save
+open dessert.txt
+as a add "Try [[recipes.txt]] or [[recipes.txt]]."
+save
+open notes.txt
+as a add "[[ghost.txt]]"
+save
+open recipes.txt
+backlinks
+related 2
+broken
+orphans
+new ghost.txt
+broken
+rm market.txt
+broken
+restore 1
+broken
+open notes.txt
+as carol embed recipes.txt
+save
+open recipes.txt
+as carol embed notes.txt
+as bob add "{{embed:notes.txt}}"
+save
+block spam
+open dessert.txt
+as bob add "Buy SPAM, eggs and milk."
+show
+blocked
+similar 3 20
+fptest bloom 640 7 64
+fptest counting 64 3 20
+ls size desc
+bin
+rm recipes.txt
+emptybin
+check on
+as x add "hi"
+check off
+cd ..
