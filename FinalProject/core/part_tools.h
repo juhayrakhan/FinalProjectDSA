@@ -25,7 +25,7 @@ bool cycRec(Doc* d, int gray, int black) {
     return false;
 }
 bool runCheck() {
-    Array<LineTree*> sv; Array<char> owned;    // saved text of every document
+    DynamicArray<LineTree*> sv; DynamicArray<char> owned;    // saved text of every document
     for (int i = 0; i < docs.size(); i++) {
         Doc* d = docs[i];
         if (d->staged.size() == 0) { sv.push(&d->tree); owned.push(0); }
@@ -35,7 +35,7 @@ bool runCheck() {
     for (int i = 0; i < sv.size(); i++) if (owned[i]) delete sv[i];
     return ok;
 }
-bool checkInner(Array<LineTree*>& sv) {
+bool checkInner(DynamicArray<LineTree*>& sv) {
     string why;
     // AVL trees and LineID maps
     for (int i = 0; i < docs.size(); i++) {
@@ -69,11 +69,11 @@ bool checkInner(Array<LineTree*>& sv) {
     // index == tokens of saved text (both directions)
     for (int i = 0; i < docs.size(); i++) {
         Doc* d = docs[i];
-        Array<string> tk;
+        DynamicArray<string> tk;
         for (LNode* x = sv[i]->first(); x; x = LineTree::next(x)) {
             distinctTok(x->text, tk);
             for (int j = 0; j < tk.size(); j++) {
-                const Array<Posting>* L = index.get(tk[j]);
+                const DynamicArray<Posting>* L = index.get(tk[j]);
                 bool f = false;
                 if (L) for (int q = 0; q < L->size(); q++) if ((*L)[q].file == d->id && (*L)[q].line == x->id) f = true;
                 if (!f) return fail("index-missing", d->node->name + " " + lid(x->id) + " lacks a posting for '" + tk[j] + "'");
@@ -89,13 +89,13 @@ bool checkInner(Array<LineTree*>& sv) {
                 if (di < 0) return fail("index-doc", "posting of '" + l->keys[i] + "' names a deleted document F" + num(p.file));
                 LNode* n = sv[di]->find(p.line);
                 if (!n) return fail("index-line", "posting of '" + l->keys[i] + "' names " + lid(p.line) + " which is not in " + docs[di]->node->name);
-                Array<string> tk; distinctTok(n->text, tk);
+                DynamicArray<string> tk; distinctTok(n->text, tk);
                 if (!hasTok(tk, l->keys[i])) return fail("index-token", lid(p.line) + " does not contain '" + l->keys[i] + "'");
             }
     // Bloom filters: no false negatives
     for (int i = 0; i < docs.size(); i++) {
         if (docs[i]->inBin) continue;
-        Array<string> tk;
+        DynamicArray<string> tk;
         for (LNode* x = sv[i]->first(); x; x = LineTree::next(x)) {
             tokenize(x->text, tk);
             for (int j = 0; j < tk.size(); j++)
@@ -110,7 +110,7 @@ bool checkInner(Array<LineTree*>& sv) {
                 if (d->out[k].size() || d->in[k].size() || d->unres[k].size()) return fail("graph-bin", d->node->name + " is in the bin but has graph entries");
                 continue;
             }
-            Array<Delta> ex;
+            DynamicArray<Delta> ex;
             for (LNode* x = sv[i]->first(); x; x = LineTree::next(x)) textDeltas(d, x->text, 1, ex);
             int entries = 0;
             for (int j = 0; j < ex.size(); j++) {

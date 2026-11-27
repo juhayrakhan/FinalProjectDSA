@@ -12,9 +12,9 @@ static string cid(unsigned int v) { return "c" + to_string(v); }
 
 // ---------------------------------------------------------------- breadcrumb (Section 5.2.2)
 string crumb() {
-    Array<string> rev;
+    DynamicArray<string> rev;
     for (FNode* n = cwd; n != root; n = n->parent) rev.push(n->name);
-    Array<string> seg;
+    DynamicArray<string> seg;
     seg.push("root");
     for (int i = rev.size() - 1; i >= 0; i--) seg.push(rev[i]);
     if (cur) seg.push(cur->node->name);
@@ -35,7 +35,7 @@ string crumb() {
 
 // ---------------------------------------------------------------- command line parsing
 // words are split on blanks; a word that starts with '"' begins the quoted tail
-void split(const string& s, Array<string>& t, string& tail) {
+void split(const string& s, DynamicArray<string>& t, string& tail) {
     int i = 0, n = len(s);
     while (i < n) {
         while (i < n && (s[i] == ' ' || s[i] == '\t' || s[i] == '\r')) i++;
@@ -77,7 +77,7 @@ bool textArg(const string& tail, string& out) {
 void exec(const string& line) {
     tick++;                                   // now(): one tick per command line
     bool wasOn = checkOn;
-    Array<string> t; string tail;
+    DynamicArray<string> t; string tail;
     split(line, t, tail);
     bool isCheckCmd = false;
     if (t.size() == 0) {

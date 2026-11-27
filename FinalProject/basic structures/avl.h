@@ -130,7 +130,7 @@ struct LineTree {
         if (root && root->p) { why = "avl-parent|root has a parent"; return false; }
         int cnt = 0;
         if (!chk(root, why, cnt)) return false;
-        if (cnt != ids.n) { why = "lineid-map|map holds " + to_string(ids.n) + " entries, tree " + to_string(cnt) + " lines"; return false; }
+        if (cnt != ids.count) { why = "lineid-map|map holds " + to_string(ids.count) + " entries, tree " + to_string(cnt) + " lines"; return false; }
         return true;
     }
     bool chk(LNode* n, string& why, int& cnt) const {

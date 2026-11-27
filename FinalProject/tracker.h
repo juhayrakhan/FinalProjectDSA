@@ -3,8 +3,6 @@
 // global operator new / delete replaced here, so the exit report can detect leaks.
 
 
-
-
 /// TRASHIN THIS WHOLE AHH FILE INSHA ALLAH
 
 #pragma once

@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="FinalProject\basic structures\arrayqueue.h" />
     <ClInclude Include="FinalProject\basic structures\avl.h" />
     <ClInclude Include="FinalProject\basic structures\bloom.h" />
     <ClInclude Include="FinalProject\basic structures\bplus.h" />

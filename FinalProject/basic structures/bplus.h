@@ -22,7 +22,7 @@ struct BNode {
     bool leaf; int nk;
     string* keys;
     BNode** ch;                  // internal only
-    Array<Posting>** post;       // leaf only (one list per key)
+    DynamicArray<Posting>** post;       // leaf only (one list per key)
     BNode* next;                 // leaf link
 };
 
@@ -40,7 +40,7 @@ struct BPlus {
         BNode* n = new BNode;
         n->leaf = leaf; n->nk = 0; n->next = 0; n->ch = 0; n->post = 0;
         n->keys = new string[m + 2];
-        if (leaf) { n->post = new Array<Posting>*[m + 2]; for (int i = 0; i < m + 2; i++) n->post[i] = 0; }
+        if (leaf) { n->post = new DynamicArray<Posting>*[m + 2]; for (int i = 0; i < m + 2; i++) n->post[i] = 0; }
         else { n->ch = new BNode*[m + 3]; for (int i = 0; i < m + 3; i++) n->ch[i] = 0; }
         return n;
     }
@@ -62,7 +62,7 @@ struct BPlus {
         }
         return n;
     }
-    const Array<Posting>* get(const string& key) const {
+    const DynamicArray<Posting>* get(const string& key) const {
         BNode* l = leafFor(key);
         if (!l) return 0;
         for (int i = 0; i < l->nk; i++) if (l->keys[i] == key) return l->post[i];
@@ -86,7 +86,7 @@ struct BPlus {
             int i = 0;
             while (i < n->nk && n->keys[i] < key) i++;
             if (i < n->nk && n->keys[i] == key) {
-                Array<Posting>& L = *n->post[i];
+                DynamicArray<Posting>& L = *n->post[i];
                 int j = 0;
                 while (j < L.size() && cmpPost(L[j], p) < 0) j++;
                 if (j < L.size() && cmpPost(L[j], p) == 0) return res;
@@ -95,7 +95,7 @@ struct BPlus {
             }
             for (int j = n->nk; j > i; j--) { n->keys[j] = n->keys[j - 1]; n->post[j] = n->post[j - 1]; }
             n->keys[i] = key;
-            n->post[i] = new Array<Posting>;
+            n->post[i] = new DynamicArray<Posting>;
             n->post[i]->push(p);
             n->nk++;
             if (n->nk >= m) {                          // overflow: split, copy first key up
@@ -140,7 +140,7 @@ struct BPlus {
             int i = 0;
             while (i < n->nk && n->keys[i] < key) i++;
             if (i >= n->nk || !(n->keys[i] == key)) return;
-            Array<Posting>& L = *n->post[i];
+            DynamicArray<Posting>& L = *n->post[i];
             int j = 0;
             while (j < L.size() && cmpPost(L[j], p) != 0) j++;
             if (j >= L.size()) return;
@@ -229,7 +229,7 @@ struct BPlus {
         return true;
     }
     // appends every posting of every key that starts with `pre` (walks the leaf links)
-    void scanPrefix(const string& pre, Array<Posting>& out) const {
+    void scanPrefix(const string& pre, DynamicArray<Posting>& out) const {
         BNode* l = leafFor(pre);
         int pos = 0;
         if (l) while (pos < l->nk && l->keys[pos] < pre) pos++;
@@ -241,32 +241,32 @@ struct BPlus {
             l = l->next; pos = 0;
         }
     }
-    void collectFile(unsigned int file, Array<KP>& out) const {
+    void collectFile(unsigned int file, DynamicArray<KP>& out) const {
         for (BNode* l = firstLeaf(); l; l = l->next)
             for (int i = 0; i < l->nk; i++)
                 for (int j = 0; j < l->post[i]->size(); j++)
                     if ((*l->post[i])[j].file == file) { KP kp; kp.key = l->keys[i]; kp.p = (*l->post[i])[j]; out.push(kp); }
     }
     void purgeFile(unsigned int file) {
-        Array<KP> v; collectFile(file, v);
+        DynamicArray<KP> v; collectFile(file, v);
         for (int i = 0; i < v.size(); i++) remove(v[i].key, v[i].p);
     }
     void copyFile(unsigned int from, unsigned int to) {
-        Array<KP> v; collectFile(from, v);
+        DynamicArray<KP> v; collectFile(from, v);
         for (int i = 0; i < v.size(); i++) { Posting p = v[i].p; p.file = to; insert(v[i].key, p); }
     }
 
     // ---------------------------------------------------------------- invariants
     bool verify(string& why) const {
         if (!root) return true;
-        Array<BNode*> leaves; int depth = -1;
+        DynamicArray<BNode*> leaves; int depth = -1;
         if (!vrec(root, 0, depth, 0, 0, leaves, why)) return false;
         for (int i = 0; i + 1 < leaves.size(); i++)
             if (leaves[i]->next != leaves[i + 1]) { why = "leaf link does not point to the next leaf"; return false; }
         if (leaves.size() && leaves[leaves.size() - 1]->next) { why = "last leaf has a next link"; return false; }
         return true;
     }
-    bool vrec(BNode* n, int d, int& depth, const string* lo, const string* hi, Array<BNode*>& leaves, string& why) const {
+    bool vrec(BNode* n, int d, int& depth, const string* lo, const string* hi, DynamicArray<BNode*>& leaves, string& why) const {
         bool isRoot = (n == root);
         for (int i = 0; i < n->nk; i++) {
             if (i && !(n->keys[i - 1] < n->keys[i])) { why = "keys out of order in a node"; return false; }
@@ -277,7 +277,7 @@ struct BPlus {
             if (n->nk > m - 1) { why = "leaf overfull"; return false; }
             if (!isRoot && n->nk < minLeaf()) { why = "leaf underfull"; return false; }
             for (int i = 0; i < n->nk; i++) {
-                Array<Posting>& L = *n->post[i];
+                DynamicArray<Posting>& L = *n->post[i];
                 if (L.empty()) { why = "empty posting list for '" + n->keys[i] + "'"; return false; }
                 for (int j = 1; j < L.size(); j++)
                     if (cmpPost(L[j - 1], L[j]) >= 0) { why = "postings of '" + n->keys[i] + "' not sorted"; return false; }

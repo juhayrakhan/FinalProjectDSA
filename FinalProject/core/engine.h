@@ -7,6 +7,7 @@
 #include "../basic structures/dynamicarray.h"
 #include "../basic structures/bloom.h"
 #include "../basic structures/avl.h"
+#include "../basic structures/arrayqueue.h"
 #include "../basic structures/bplus.h"
 
 using namespace std;
@@ -25,7 +26,7 @@ struct Op {
 struct Commit {
     unsigned int num; Commit *p1, *p2;
     int tick, depth;
-    Ring<Op> ops;
+    CircularQueue<Op> ops;
     Bloom* bloom;
     int refs;                 // child commits + document heads
     int markA, markB, chk;    // traversal stamps / checker scratch
@@ -38,7 +39,7 @@ struct FNode {                // explorer (N-ary tree) node
     string name, path;
     bool file, starred;
     FNode* parent;
-    Array<FNode*> kids;
+    DynamicArray<FNode*> kids;
     Doc* doc;
     FNode() : file(false), starred(false), parent(0), doc(0) {}
 };
@@ -48,12 +49,12 @@ struct Unres { string path; int count; };
 struct Doc {
     unsigned int id; FNode* node;
     LineTree tree;            // working text
-    Ring<Op> staged;
+    CircularQueue<Op> staged;
     Commit* head;
     int lastMod;
     bool inBin;
-    Array<Edge> out[2], in[2];     // [0] links, [1] embeds
-    Array<Unres> unres[2];
+    DynamicArray<Edge> out[2], in[2];     // [0] links, [1] embeds
+    DynamicArray<Unres> unres[2];
     int visit; Doc* par; bool expanding;
     Doc() : id(0), node(0), head(0), lastMod(0), inBin(false), visit(0), par(0), expanding(false) {}
 };
@@ -93,8 +94,8 @@ struct Engine {
     HashMap<string, FNode*, HStr> paths;          // absolute path -> node (live nodes only)
     HashMap<unsigned long long, Doc*, HId> docById;           // FileID -> document
     HashMap<unsigned long long, Commit*, HId> commits;        // CommitID -> commit
-    Array<Doc*> docs;                          // every document not yet permanently deleted, FileID order
-    Array<BinItem*> bin;
+    DynamicArray<Doc*> docs;                          // every document not yet permanently deleted, FileID order
+    DynamicArray<BinItem*> bin;
     BPlus index;
     CountingBloom bl;
     HashMap<string, char, HStr> blocked;          // exact set behind the counting filter

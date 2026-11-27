@@ -20,7 +20,7 @@ string absRef(Doc* d, const string& t) {
     return f == "/" ? "/" + t : f + "/" + t;
 }
 // kind 0: [[x]]   kind 1: {{embed:x}}; appends the targets exactly as written
-static void scanRefs(const string& text, int kind, Array<string>& out) {
+static void scanRefs(const string& text, int kind, DynamicArray<string>& out) {
     string op = kind ? "{{embed:" : "[[", cl = kind ? "}}" : "]]";
     int i = 0;
     for (;;) {
@@ -35,21 +35,21 @@ static void scanRefs(const string& text, int kind, Array<string>& out) {
 }
 
 // ---------------------------------------------------------------- graph primitives (k: 0 link, 1 embed)
-static Edge* findEdge(Array<Edge>& a, unsigned int other) {
+static Edge* findEdge(DynamicArray<Edge>& a, unsigned int other) {
     for (int i = 0; i < a.size(); i++) if (a[i].other == other) return &a[i];
     return 0;
 }
-static void dropEdge(Array<Edge>& a, unsigned int other) {
+static void dropEdge(DynamicArray<Edge>& a, unsigned int other) {
     for (int i = 0; i < a.size(); i++) if (a[i].other == other) { a.removeAt(i); return; }
 }
-static void bump(Array<Edge>& a, unsigned int other, int d) {
+static void bump(DynamicArray<Edge>& a, unsigned int other, int d) {
     Edge* e = findEdge(a, other);
     if (e) { e->count += d; if (e->count <= 0) dropEdge(a, other); }
     else if (d > 0) { Edge x; x.other = other; x.count = d; a.push(x); }
 }
 void edgeAdd(Doc* s, Doc* t, int k, int d) { bump(s->out[k], t->id, d); bump(t->in[k], s->id, d); }
 void unresAdd(Doc* s, int k, const string& path, int d) {
-    Array<Unres>& a = s->unres[k];
+    DynamicArray<Unres>& a = s->unres[k];
     for (int i = 0; i < a.size(); i++)
         if (a[i].path == path) { a[i].count += d; if (a[i].count <= 0) a.removeAt(i); return; }
     if (d > 0) { Unres u; u.path = path; u.count = d; a.push(u); }
@@ -76,7 +76,7 @@ bool wouldCycle(Doc* u, Doc* v, string& cyc) {
         }
     }
     if (!found) return false;
-    Array<Doc*> path;
+    DynamicArray<Doc*> path;
     for (Doc* x = u; x; x = x->par) path.push(x);            // u ... v
     cyc = "";
     for (int i = path.size() - 1; i >= 0; i--) cyc += dispName(path[i]) + " -> ";
@@ -108,28 +108,28 @@ bool addRef(Doc* s, int k, const string& path, int d, string* cyc, int mode, int
     if (where) *where = w;
     return true;
 }
-static void addDelta(Array<Delta>& a, int k, const string& path, int d) {
+static void addDelta(DynamicArray<Delta>& a, int k, const string& path, int d) {
     for (int i = 0; i < a.size(); i++) if (a[i].k == k && a[i].path == path) { a[i].d += d; return; }
     Delta x; x.k = k; x.path = path; x.d = d;
     a.push(x);
 }
-void textDeltas(Doc* doc, const string& text, int sign, Array<Delta>& out) {
+void textDeltas(Doc* doc, const string& text, int sign, DynamicArray<Delta>& out) {
     for (int k = 0; k < 2; k++) {
-        Array<string> r;
+        DynamicArray<string> r;
         scanRefs(text, k, r);
         for (int i = 0; i < r.size(); i++) addDelta(out, k, absRef(doc, r[i]), sign);
     }
 }
 // updates both graphs from saved ops; an embed cycle rejects everything and rolls back
-bool applyGraphOps(Doc* d, Ring<Op>& ops, string& cyc) {
-    Array<Delta> ds;
+bool applyGraphOps(Doc* d, CircularQueue<Op>& ops, string& cyc) {
+    DynamicArray<Delta> ds;
     for (int i = 0; i < ops.size(); i++) {
         Op& o = ops.get(i);
         if (o.type == OP_INS) textDeltas(d, o.newText, 1, ds);
         else if (o.type == OP_DEL) textDeltas(d, o.oldText, -1, ds);
         else { textDeltas(d, o.oldText, -1, ds); textDeltas(d, o.newText, 1, ds); }
     }
-    Array<int> where;                          // where each delta landed, for an exact rollback
+    DynamicArray<int> where;                          // where each delta landed, for an exact rollback
     for (int i = 0; i < ds.size(); i++) {
         int w = 0;
         if (ds[i].d != 0 && !addRef(d, ds[i].k, ds[i].path, ds[i].d, &cyc, 1, &w)) {
@@ -164,7 +164,7 @@ void detachGraph(Doc* d) {                     // document goes to the bin
 void rebuildGraph(Doc* d) {                    // rescans saved text (= working text when nothing is staged)
     for (LNode* x = d->tree.first(); x; x = LineTree::next(x))
         for (int k = 0; k < 2; k++) {
-            Array<string> r;
+            DynamicArray<string> r;
             scanRefs(x->text, k, r);
             for (int i = 0; i < r.size(); i++) addRef(d, k, absRef(d, r[i]), 1, 0, k ? 2 : 0);
         }
@@ -189,22 +189,22 @@ void healAll() {
 
 // ---------------------------------------------------------------- index maintenance (saved text only)
 void idxAdd(Doc* d, unsigned long long line, const string& text) {
-    Array<string> tk; distinctTok(text, tk);
+    DynamicArray<string> tk; distinctTok(text, tk);
     Posting p; p.file = d->id; p.line = line;
     for (int i = 0; i < tk.size(); i++) index.insert(tk[i], p);
 }
 void idxDel(Doc* d, unsigned long long line, const string& text) {
-    Array<string> tk; distinctTok(text, tk);
+    DynamicArray<string> tk; distinctTok(text, tk);
     Posting p; p.file = d->id; p.line = line;
     for (int i = 0; i < tk.size(); i++) index.remove(tk[i], p);
 }
-void indexOps(Doc* d, Ring<Op>& ops) {
+void indexOps(Doc* d, CircularQueue<Op>& ops) {
     for (int i = 0; i < ops.size(); i++) {
         Op& o = ops.get(i);
         if (o.type == OP_INS) idxAdd(d, o.id, o.newText);
         else if (o.type == OP_DEL) idxDel(d, o.id, o.oldText);
         else {
-            Array<string> a, b;
+            DynamicArray<string> a, b;
             distinctTok(o.oldText, a); distinctTok(o.newText, b);
             Posting p; p.file = d->id; p.line = o.id;
             for (int j = 0; j < a.size(); j++) if (!hasTok(b, a[j])) index.remove(a[j], p);
@@ -227,17 +227,17 @@ void cmdSearch(const string& arg) {
         live++;
         if (!prefix && docs[i]->head->bloom->test(w)) passed++;
     }
-    Array<Posting> ps;
+    DynamicArray<Posting> ps;
     if (prefix) {
         index.scanPrefix(w, ps);
         stableSort(ps, [](const Posting& a, const Posting& b) { return cmpPost(a, b) < 0; });
     } else {
         if (passed == 0) { pl("no matches"); return; }
-        const Array<Posting>* L = index.get(w);
+        const DynamicArray<Posting>* L = index.get(w);
         if (L) for (int i = 0; i < L->size(); i++) ps.push((*L)[i]);
     }
     int matches = 0, ndocs = 0; unsigned int lastDoc = 0;
-    Array<string> out;
+    DynamicArray<string> out;
     for (int i = 0; i < ps.size(); i++) {
         if (i && cmpPost(ps[i], ps[i - 1]) == 0) continue;           // duplicates (prefix queries)
         Doc** dp = docById.find(ps[i].file);
@@ -270,7 +270,7 @@ void cmdRelated(const string& a) {
     if (!parseInt(a, h) || h < 1) { usage("related <h>"); return; }
     if (!cur) { err("no document is open"); return; }
     int st = ++visitCtr;
-    Ring<Doc*> q; Ring<int> dist;
+    CircularQueue<Doc*> q; CircularQueue<int> dist;
     cur->visit = st;
     q.push(cur); dist.push(0);
     while (q.size()) {                         // breadth-first search along outgoing links
@@ -300,21 +300,21 @@ void cmdOrphans() {
 }
 
 // ---------------------------------------------------------------- similarity checker (Section 5.10)
-struct Sh { Doc* d; int n; Bloom* bf; HashMap<string, char, HStr>* set; Array<string>* list; };
-void cmdSimilar(Array<string>& t) {
+struct Sh { Doc* d; int n; Bloom* bf; HashMap<string, char, HStr>* set; DynamicArray<string>* list; };
+void cmdSimilar(DynamicArray<string>& t) {
     int k, pct = 80;
     if (!parseInt(t[1], k) || k < 1 || (t.size() > 2 && (!parseInt(t[2], pct) || pct > 100))) { usage("similar <k> [percent]"); return; }
-    Array<Sh> sh;
+    DynamicArray<Sh> sh;
     for (int i = 0; i < docs.size(); i++) {
         Doc* d = docs[i];
         if (d->inBin) continue;
-        Array<string> all, tk;
+        DynamicArray<string> all, tk;
         for (LNode* x = d->tree.first(); x; x = LineTree::next(x)) {
             tokenize(x->text, tk);
             for (int j = 0; j < tk.size(); j++) all.push(tk[j]);
         }
         if (all.size() < 3) continue;
-        Sh s; s.d = d; s.set = new HashMap<string, char, HStr>; s.list = new Array<string>;
+        Sh s; s.d = d; s.set = new HashMap<string, char, HStr>; s.list = new DynamicArray<string>;
         for (int j = 0; j + 2 < all.size(); j++) {
             string g = all[j] + " " + all[j + 1] + " " + all[j + 2];
             if (!s.set->find(g)) { s.set->put(g, 1); s.list->push(g); }
@@ -338,7 +338,7 @@ void cmdSimilar(Array<string>& t) {
         }
     if (heap.h.size() == 0) pl("no pairs at or above " + num(pct) + "%");
     else {
-        Array<HeapItem> res;
+        DynamicArray<HeapItem> res;
         while (heap.h.size()) res.push(heap.popMin());
         pl("rank A B bloom exact note");
         for (int r = res.size() - 1, rank = 1; r >= 0; r--, rank++) {
@@ -349,7 +349,7 @@ void cmdSimilar(Array<string>& t) {
             pickPair(ab, A.n, ba, B.n, bn, bd);
             pickPair(eab, A.n, eba, B.n, en, ed);
             string line = num(rank) + " " + dispName(A.d) + " " + dispName(B.d) + " " + num(pctRound(bn, bd)) + "% " + num(pctRound(en, ed)) + "%";
-            Array<Commit*> la, lb; Commit* lca; int sa, sb;
+            DynamicArray<Commit*> la, lb; Commit* lca; int sa, sb;
             lcaOf(A.d, B.d, lca, la, lb, sa, sb);
             if (lca) line += " fork-related (LCA " + cid(lca->num) + ")";
             pl(line);
@@ -383,7 +383,7 @@ bool isBlockedTok(const string& tok) {            // counting filter in front of
     return blocked.find(tok) != 0;
 }
 void warnText(int n, const string& text) {
-    Array<string> tk, warned;
+    DynamicArray<string> tk, warned;
     tokenize(text, tk);
     for (int i = 0; i < tk.size(); i++)
         if (isBlockedTok(tk[i]) && !hasTok(warned, tk[i])) {
@@ -407,7 +407,7 @@ void cmdUnblock(const string& a) {
     pl("unblocked " + w);
 }
 void cmdBlocked() {
-    Array<string> ws;
+    DynamicArray<string> ws;
     for (int i = 0; i < blocked.nb; i++)
         for (HashMap<string, char, HStr>::Node* x = blocked.b[i]; x; x = x->next) ws.push(x->key);
     stableSort(ws, [](const string& a, const string& b) { return a < b; });

@@ -53,7 +53,7 @@ static void applyInv(LineTree& t, const Op& o) {
 }
 
 // ---------------------------------------------------------------- the "as <author> ..." commands
-void cmdAs(Array<string>& t, const string& tail) {
+void cmdAs(DynamicArray<string>& t, const string& tail) {
     if (t.size() < 3) { usage("as <author> add|insert|edit|delete|embed ..."); return; }
     const string& sub = t[2];
     const string& author = t[1];
@@ -130,7 +130,7 @@ void cmdEmbed(Doc* d, const string& author, const string& name) {
 // ---------------------------------------------------------------- show / authors / tac
 int blockedCount(Doc* d) {
     int c = 0;
-    Array<string> tk;
+    DynamicArray<string> tk;
     for (LNode* x = d->tree.first(); x; x = LineTree::next(x)) {
         tokenize(x->text, tk);
         for (int i = 0; i < tk.size(); i++) if (blocked.find(tk[i])) { c++; break; }
@@ -143,7 +143,7 @@ void showDoc(Doc* d, int indent, bool top) {
         string pre(indent * 4, ' ');
         if (top) pl(pre + num(n) + " [" + x->author + "] " + x->text);
         else pl(pre + "[" + x->author + "] " + x->text);
-        Array<string> refs;
+        DynamicArray<string> refs;
         scanRefs(x->text, 1, refs);
         for (int i = 0; i < refs.size(); i++) {
             Doc* t = docAt(absRef(d, refs[i]));
@@ -166,7 +166,7 @@ void cmdShow() {
 }
 void cmdAuthors() {
     if (!cur) { err("no document is open"); return; }
-    Array<string> names; Array<int> cnt;
+    DynamicArray<string> names; DynamicArray<int> cnt;
     for (LNode* x = cur->tree.first(); x; x = LineTree::next(x)) {
         int k = -1;
         for (int i = 0; i < names.size(); i++) if (names[i] == x->author) k = i;
@@ -186,8 +186,8 @@ void cmdTac(const string& a) {
 }
 
 // ---------------------------------------------------------------- save / discard
-void bloomOps(Bloom* b, Ring<Op>& ops) {
-    Array<string> tk;
+void bloomOps(Bloom* b, CircularQueue<Op>& ops) {
+    DynamicArray<string> tk;
     for (int i = 0; i < ops.size(); i++) {
         Op& o = ops.get(i);
         if (o.type == OP_DEL) continue;

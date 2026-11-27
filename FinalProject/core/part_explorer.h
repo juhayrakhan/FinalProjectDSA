@@ -31,7 +31,7 @@ FNode* mkNode(FNode* par, const string& name, bool file) {
     return n;
 }
 // splits s on '/' into seg; with dots, "." is ignored and ".." pops (false if it leaves the root)
-static bool pushSegs(const string& s, Array<string>& seg, bool dots) {
+static bool pushSegs(const string& s, DynamicArray<string>& seg, bool dots) {
     int i = 0;
     while (i <= len(s)) {
         int j = s.find('/', i);
@@ -45,7 +45,7 @@ static bool pushSegs(const string& s, Array<string>& seg, bool dots) {
     return true;
 }
 bool norm(const string& p, string& out) {            // absolute normalised path
-    Array<string> seg;
+    DynamicArray<string> seg;
     bool abs = !p.empty() && p[0] == '/';
     if (!abs) pushSegs(cwd->path, seg, false);
     if (!pushSegs(p, seg, true)) return false;
@@ -137,7 +137,7 @@ int keyCmp(FNode* a, FNode* b, int key) {
     long x = keyNum(a, key), y = keyNum(b, key);
     return x < y ? -1 : (y < x ? 1 : 0);
 }
-void cmdLs(Array<string>& t) {
+void cmdLs(DynamicArray<string>& t) {
     int key = 0; bool desc = false; int i = 1;
     if (i < t.size()) {
         const string& a = t[i];
@@ -148,7 +148,7 @@ void cmdLs(Array<string>& t) {
         } else if (a == "asc" || a == "desc") { desc = a == "desc"; i++; }
     }
     if (i < t.size()) { usage("ls [name|modified|size|ext] [asc|desc]"); return; }
-    Array<FNode*> st, fo, fi;
+    DynamicArray<FNode*> st, fo, fi;
     for (int j = 0; j < cwd->kids.size(); j++) {
         FNode* k = cwd->kids[j];
         if (!k->file) fo.push(k); else if (k->starred) st.push(k); else fi.push(k);
@@ -244,7 +244,7 @@ void relink(FNode* n) {                        // recompute paths below a re-att
     if (n->file) n->doc->inBin = false;
     for (int i = 0; i < n->kids.size(); i++) relink(n->kids[i]);
 }
-void collectDocs(FNode* n, Array<Doc*>& out) {
+void collectDocs(FNode* n, DynamicArray<Doc*>& out) {
     if (n->file) out.push(n->doc);
     for (int i = 0; i < n->kids.size(); i++) collectDocs(n->kids[i], out);
 }
@@ -271,7 +271,7 @@ void cmdRestore(const string& a) {
     else if (!avail && taken) msg += " (its folder is not available; " + orig + " was taken)";
     else if (taken) msg += " (" + orig + " was taken)";
     pl(msg);
-    Array<Doc*> ds; collectDocs(node, ds);
+    DynamicArray<Doc*> ds; collectDocs(node, ds);
     stableSort(ds, [](Doc* x, Doc* y) { return x->id < y->id; });
     for (int i = 0; i < ds.size(); i++) rebuildGraph(ds[i]);   // rescan saved text, re-resolve
     healAll();
