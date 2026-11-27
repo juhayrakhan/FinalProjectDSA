@@ -4,7 +4,7 @@
 Commit* newCommit(Commit* p1, Commit* p2) {
     Commit* c = new Commit;
     c->num = ++nextCommit; c->p1 = p1; c->p2 = p2; c->tick = tick;
-    c->depth = p1 ? 1 + maxxx(p1->depth, p2 ? p2->depth : 0) : 0;
+    c->depth = p1 ? 1 + getMax(p1->depth, p2 ? p2->depth : 0) : 0;
     c->bloom = new Bloom(bloomM, bloomK);
     if (p1) c->bloom->copyFrom(*p1->bloom);       // starts from a copy of the parent's filter
     if (p2) c->bloom->orWith(*p2->bloom);         // a merge ORs both parents' filters
@@ -35,7 +35,7 @@ void setHead(Doc* d, Commit* c) {
 
 // ---------------------------------------------------------------- stamping and LCA (Section 5.5)
 // marks every ancestor of h (through all parents) with a fresh stamp; which=0 uses markA, 1 markB
-int stamp(Commit* h, int which, Array<Commit*>* list) {
+int stamp(Commit* h, int which, DynamicArray<Commit*>* list) {
     int st = ++stampCtr;
     Stack<Commit*> s;
     s.push(h);
@@ -51,7 +51,7 @@ int stamp(Commit* h, int which, Array<Commit*>* list) {
     return st;
 }
 // A's ancestors get markA == sa, B's get markB == sb; lca = deepest commit stamped by both
-void lcaOf(Doc* a, Doc* b, Commit*& lca, Array<Commit*>& la, Array<Commit*>& lb, int& sa, int& sb) {
+void lcaOf(Doc* a, Doc* b, Commit*& lca, DynamicArray<Commit*>& la, DynamicArray<Commit*>& lb, int& sa, int& sb) {
     sa = stamp(a->head, 0, &la);
     sb = stamp(b->head, 1, &lb);
     lca = 0;
@@ -79,7 +79,7 @@ void cmdLog() {
         else {
             s += " ops " + num(c->ops.size());
             if (c->p2) s += " merges " + cid(c->p2->num);
-            Array<string> au;
+            DynamicArray<string> au;
             for (int i = 0; i < c->ops.size(); i++) if (!hasTok(au, c->ops.get(i).author)) au.push(c->ops.get(i).author);
             s += " authors ";
             for (int i = 0; i < au.size(); i++) s += (i ? ", " : "") + au[i];
@@ -128,13 +128,13 @@ void cmdFork(const string& src, const string& nn) {
 void cmdCommon(const string& a, const string& b) {
     Doc* x = resolveDoc(a); if (!x) return;
     Doc* y = resolveDoc(b); if (!y) return;
-    Array<Commit*> la, lb; Commit* lca; int sa, sb;
+    DynamicArray<Commit*> la, lb; Commit* lca; int sa, sb;
     lcaOf(x, y, lca, la, lb, sa, sb);
     if (!lca) { err(a + " and " + b + " share no common ancestor"); return; }
     pl("common ancestor: " + cid(lca->num) + " (depth " + num(lca->depth) + ")");
     for (int side = 0; side < 2; side++) {
-        Array<Commit*>& L = side ? lb : la;
-        Array<int> ids;
+        DynamicArray<Commit*>& L = side ? lb : la;
+        DynamicArray<int> ids;
         for (int i = 0; i < L.size(); i++) if ((side ? L[i]->markA != sa : L[i]->markB != sb)) ids.push(L[i]->num);
         stableSort(ids, [](int p1, int p2) { return p1 > p2; });
         string s = (side ? b : a) + " is " + plural(ids.size(), "commit") + " ahead";
@@ -173,7 +173,7 @@ void cmdMerge(const string& inName, const string& tgName) {
     if (in2 == tg) { err("a document cannot be merged into itself"); return; }
     if (tg->staged.size()) { err(tg->node->name + " has staged changes; save or discard first"); return; }
     if (in2->staged.size()) { err(in2->node->name + " has staged changes; save or discard first"); return; }
-    Array<Commit*> la, lb; Commit* lca; int sa, sb;
+    DynamicArray<Commit*> la, lb; Commit* lca; int sa, sb;
     lcaOf(tg, in2, lca, la, lb, sa, sb);          // markA = ancestors of target, markB = of incoming
     if (in2->head->markA == sa) { pl("already up to date"); return; }
     if (!lca) { err(inName + " and " + tgName + " share no common ancestor"); return; }
@@ -193,7 +193,7 @@ void cmdMerge(const string& inName, const string& tgName) {
     }
     LineTree work;                                 // working copy: abort simply frees it
     work.copyFrom(tg->tree);
-    Ring<Op> applied;
+    CircularQueue<Op> applied;
     HashMap<unsigned long long, int, HId> dec;
     int nApp = 0, nSkip = 0, nKept = 0, nNote = 0;
     bool aborted = false;
