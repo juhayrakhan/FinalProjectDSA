@@ -1,6 +1,12 @@
 // tracker.h - allocation tracker (Section 5.12).
 // Every allocation in the program (including string's) goes through the
 // global operator new / delete replaced here, so the exit report can detect leaks.
+
+
+
+
+/// TRASHIN THIS WHOLE AHH FILE INSHA ALLAH
+
 #pragma once
 #include <cstdlib>
 #include <cstddef>

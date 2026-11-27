@@ -3,7 +3,7 @@
 // >= ceil(m/2) children; leaves hold <= m-1 keys and >= ceil((m-1)/2). Leaves are linked.
 // Leaf split copies the first key of the new right leaf up; internal split moves the middle key up.
 #pragma once
-#include "ds.h"
+#include "dynamicarray.h"
 
 // Order m is a compile-time constant (>= 3). Fuzz runs construct the tree with order 3.
 constexpr int BP_ORDER = 4;

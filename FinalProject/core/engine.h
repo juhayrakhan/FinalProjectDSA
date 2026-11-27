@@ -4,11 +4,12 @@
 #pragma once
 #include <iostream>
 #include <fstream>
-#include <cstdio>
-#include "../basic structures/ds.h"
+#include "../basic structures/dynamicarray.h"
 #include "../basic structures/bloom.h"
 #include "../basic structures/avl.h"
 #include "../basic structures/bplus.h"
+
+using namespace std;
 
 const int OP_INS = 0, OP_DEL = 1, OP_EDIT = 2;
 

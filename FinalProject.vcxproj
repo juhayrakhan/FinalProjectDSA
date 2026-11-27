@@ -22,7 +22,8 @@
     <ClInclude Include="FinalProject\basic structures\avl.h" />
     <ClInclude Include="FinalProject\basic structures\bloom.h" />
     <ClInclude Include="FinalProject\basic structures\bplus.h" />
-    <ClInclude Include="FinalProject\basic structures\ds.h" />
+    <ClInclude Include="FinalProject\basic structures\dynamicarray.h" />
+    <ClInclude Include="FinalProject\basic structures\utilityfuncs.h" />
     <ClInclude Include="FinalProject\core\engine.h" />
     <ClInclude Include="FinalProject\core\part_core.h" />
     <ClInclude Include="FinalProject\core\part_doc.h" />

@@ -1,7 +1,7 @@
 // bloom.h - plain Bloom filter (Sections 5.7, 5.10) and counting Bloom filter (Section 5.11).
 // Positions use double hashing: position(i) = (h1 + i*h2) mod m, h1 = FNV-1a, h2 = djb2 | 1.
 #pragma once
-#include "ds.h"
+#include "dynamicarray.h"
 
 struct Bloom {
     unsigned int m, k;

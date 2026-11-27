@@ -32,7 +32,10 @@
     <ClInclude Include="FinalProject\basic structures\bplus.h">
       <Filter>basicstructures</Filter>
     </ClInclude>
-    <ClInclude Include="FinalProject\basic structures\ds.h">
+    <ClInclude Include="FinalProject\basic structures\dynamicarray.h">
+      <Filter>basicstructures</Filter>
+    </ClInclude>
+    <ClInclude Include="FinalProject\basic structures\utilityfuncs.h">
       <Filter>basicstructures</Filter>
     </ClInclude>
   </ItemGroup>

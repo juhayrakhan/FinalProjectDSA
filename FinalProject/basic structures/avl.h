@@ -2,7 +2,7 @@
 // In-order sequence = line order. There are no keys: insertion is "after a node".
 // The tree owns the LineID -> node hash map so both always hold the same lines.
 #pragma once
-#include "ds.h"
+#include "dynamicarray.h"
 
 struct LNode {
     unsigned long long id; string text, author;
