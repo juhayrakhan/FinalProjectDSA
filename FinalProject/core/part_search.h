@@ -218,9 +218,9 @@ void cmdSearch(const string& arg) {
     string w = arg; bool prefix = false;
     if (!w.empty() && w[w.size() - 1] == '*') { prefix = true; w.erase(w.size() - 1); }
     bool good = !w.empty();
-    for (int i = 0; i < len(w); i++) if (!isAN(w[i])) good = false;
+    for (int i = 0; i < len(w); i++) if (!isCharacter(w[i])) good = false;
     if (!good) { err("search takes one word or a prefix ending in *"); return; }
-    w = lower(w);
+    w = toLowercase(w);
     int live = 0, passed = 0;
     for (int i = 0; i < docs.size(); i++) {
         if (docs[i]->inBin) continue;
@@ -375,7 +375,7 @@ static double pickFrac(long x1, long d1, long x2, long d2) {
 // ---------------------------------------------------------------- blocklist (Section 5.11)
 bool blockedWordOk(const string& w) {
     if (w.empty()) return false;
-    for (int i = 0; i < len(w); i++) if (!isAN(w[i])) return false;
+    for (int i = 0; i < len(w); i++) if (!isCharacter(w[i])) return false;
     return true;
 }
 bool isBlockedTok(const string& tok) {            // counting filter in front of the exact set
@@ -392,7 +392,7 @@ void warnText(int n, const string& text) {
         }
 }
 void cmdBlock(const string& a) {
-    string w = lower(a);
+    string w = toLowercase(a);
     if (!blockedWordOk(w)) { err("a blocked word may contain only letters and digits"); return; }
     if (blocked.find(w)) { err(w + " is already blocked"); return; }
     blocked.put(w, 1);
@@ -400,7 +400,7 @@ void cmdBlock(const string& a) {
     pl("blocked " + w);
 }
 void cmdUnblock(const string& a) {
-    string w = lower(a);
+    string w = toLowercase(a);
     if (!blocked.find(w)) { err(w + " is not blocked"); return; }
     blocked.erase(w);
     bl.dec(w);

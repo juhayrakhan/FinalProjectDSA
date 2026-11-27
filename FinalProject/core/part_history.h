@@ -4,7 +4,7 @@
 Commit* newCommit(Commit* p1, Commit* p2) {
     Commit* c = new Commit;
     c->num = ++nextCommit; c->p1 = p1; c->p2 = p2; c->tick = tick;
-    c->depth = p1 ? 1 + maxxx(p1->depth, p2 ? p2->depth : 0) : 0;
+    c->depth = p1 ? 1 + getMax(p1->depth, p2 ? p2->depth : 0) : 0;
     c->bloom = new Bloom(bloomM, bloomK);
     if (p1) c->bloom->copyFrom(*p1->bloom);       // starts from a copy of the parent's filter
     if (p2) c->bloom->orWith(*p2->bloom);         // a merge ORs both parents' filters

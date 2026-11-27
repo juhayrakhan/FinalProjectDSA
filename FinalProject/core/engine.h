@@ -4,11 +4,8 @@
 #pragma once
 #include <iostream>
 #include <fstream>
-#include "../basic structures/dynamicarray.h"
-#include "../basic structures/bloom.h"
-#include "../basic structures/avl.h"
-#include "../basic structures/arrayqueue.h"
-#include "../basic structures/bplus.h"
+#include "../basic structures/all.h"
+#include "tokenisehelp.h"
 
 using namespace std;
 

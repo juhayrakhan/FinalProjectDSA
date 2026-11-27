@@ -5,13 +5,13 @@ static bool validName(const string& s) {
     if (s.empty() || len(s) > 32) return false;
     for (int i = 0; i < len(s); i++) {
         char c = s[i];
-        if (!(isAN(c) || c == '.' || c == '_' || c == '-')) return false;
+        if (!(isCharacter(c) || c == '.' || c == '_' || c == '-')) return false;
     }
     return true;
 }
 bool validAuthor(const string& s) {
     if (s.empty() || len(s) > 16) return false;
-    for (int i = 0; i < len(s); i++) if (!isAN(s[i])) return false;
+    for (int i = 0; i < len(s); i++) if (!isCharacter(s[i])) return false;
     return true;
 }
 static string joinPath(FNode* par, const string& name) { return par->path == "/" ? "/" + name : par->path + "/" + name; }
@@ -131,7 +131,7 @@ long keyNum(FNode* f, int key) { return key == 1 ? (long)f->doc->lastMod : docBy
 // three-way compare of two files by key (0 name, 1 modified, 2 size, 3 ext)
 int keyCmp(FNode* a, FNode* b, int key) {
     if (key == 0 || key == 3) {
-        string x = lower(key == 0 ? a->name : extOf(a->name)), y = lower(key == 0 ? b->name : extOf(b->name));
+        string x = toLowercase(key == 0 ? a->name : extOf(a->name)), y = toLowercase(key == 0 ? b->name : extOf(b->name));
         return x < y ? -1 : (y < x ? 1 : 0);
     }
     long x = keyNum(a, key), y = keyNum(b, key);
@@ -157,7 +157,7 @@ void cmdLs(DynamicArray<string>& t) {
     auto fileLess = [&](FNode* a, FNode* b) { return desc ? keyCmp(b, a, key) < 0 : keyCmp(a, b, key) < 0; };
     stableSort(st, fileLess);
     stableSort(fi, fileLess);
-    stableSort(fo, [&](FNode* a, FNode* b) { return lower(a->name) < lower(b->name); });
+    stableSort(fo, [&](FNode* a, FNode* b) { return toLowercase(a->name) < toLowercase(b->name); });
     for (int j = 0; j < st.size(); j++) pl(fileLine(st[j]));
     for (int j = 0; j < fo.size(); j++) pl(fo[j]->name + "/");
     for (int j = 0; j < fi.size(); j++) pl(fileLine(fi[j]));

@@ -50,7 +50,7 @@ bool checkInner(DynamicArray<LineTree*>& sv) {
     for (int i = 0; i < commits.nb; i++)
         for (HashMap<unsigned long long, Commit*, HId>::Node* x = commits.b[i]; x; x = x->next) {
             Commit* c = x->val;
-            int want = c->p1 ? 1 + maxxx(c->p1->depth, c->p2 ? c->p2->depth : 0) : 0;
+            int want = c->p1 ? 1 + getMax(c->p1->depth, c->p2 ? c->p2->depth : 0) : 0;
             if (c->depth != want) return fail("dag-depth", cid(c->num) + " has depth " + num(c->depth) + ", expected " + num(want));
             if (c->p1) c->p1->chk++;
             if (c->p2) c->p2->chk++;
