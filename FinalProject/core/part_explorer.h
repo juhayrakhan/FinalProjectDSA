@@ -34,7 +34,7 @@ FNode* mkNode(FNode* par, const string& name, bool file) {
 static bool pushSegs(const string& s, Array<string>& seg, bool dots) {
     int i = 0;
     while (i <= len(s)) {
-        int j = (int)s.find('/', i);
+        int j = s.find('/', i);
         if (j < 0) j = len(s);
         string piece = s.substr(i, j - i);
         i = j + 1;
@@ -75,7 +75,7 @@ string dispName(Doc* d) {                         // same folder as the current 
     return d->node->parent == refFolder() ? d->node->name : d->node->path;
 }
 string dispPath(const string& abs) {                 // same rule for a path that may not exist
-    int k = (int)abs.rfind('/');
+    int k = abs.rfind('/');
     string folder = k <= 0 ? string("/") : abs.substr(0, k);
     return folder == refFolder()->path ? abs.substr(k + 1) : abs;
 }
@@ -121,7 +121,7 @@ void cmdOpen(const string& a) {
 }
 
 // ---------------------------------------------------------------- listing and sorting
-static string extOf(const string& n) { int k = (int)n.rfind('.'); return k < 0 ? string("") : n.substr(k + 1); }
+static string extOf(const string& n) { int k = n.rfind('.'); return k < 0 ? string("") : n.substr(k + 1); }
 long docBytes(Doc* d) {
     long s = 0;
     for (LNode* x = d->tree.first(); x; x = LineTree::next(x)) s += len(x->text) + 1;
@@ -234,7 +234,7 @@ void cmdBin() {
     }
 }
 static string restoredName(const string& nm) {
-    int k = (int)nm.rfind('.');
+    int k = nm.rfind('.');
     if (k < 0) return nm + "_restored";
     return nm.substr(0, k) + "_restored" + nm.substr(k);
 }

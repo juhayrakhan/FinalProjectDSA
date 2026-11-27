@@ -1,0 +1,351 @@
+check on
+open d2.txt
+unblock spam
+open d2.txt
+cd /
+open d5.txt
+open d6.txt
+restore 3
+open d2.txt
+open d5.txt
+open d4.txt
+search ca*
+merge d4.txt into d4.txt
+open d1.txt
+rm d1.txt
+open d2.txt
+open d1.txt
+open d2.txt
+new d2.txt
+merge d2.txt into d4.txt
+open d2.txt
+block spam
+as bob add "eggs honey pan"
+backlinks
+as carol add "salt cake"
+as bob edit 2 "honey"
+open d6.txt
+open d2.txt
+save
+cd ..
+as carol delete 1
+new d5.txt
+save
+as bob embed d3.txt
+open d1.txt
+merge d1.txt into d1.txt
+as bob edit 1 "flour"
+save
+as bob add "spam flour spam"
+mkdir f1
+bin
+as bob add "sugar"
+as carol add "salt syrup pan oven"
+discard
+open d5.txt
+mkdir f2
+search ca*
+new d3.txt
+as carol add "syrup honey salt"
+as alice insert 1 "salt eggs"
+merge d2.txt into d3.txt
+as carol add "oven pan"
+as alice add "maple milk"
+as alice add "pan sugar syrup syrup milk {{embed:d5.txt}}"
+unblock spam
+similar 3 30
+as bob add "flour pan eggs oven syrup [[d4.txt]]"
+as carol add "sugar sugar cake maple flour"
+as alice add "cake"
+cd ..
+open d3.txt
+as bob add "milk {{embed:d2.txt}}"
+as alice insert 2 "oven flour"
+new d6.txt
+merge d6.txt into d4.txt
+fork d4.txt d1.txt
+discard
+open d2.txt
+fork d1.txt d4.txt
+similar 3 30
+search fl*
+save
+unstar d3.txt
+save
+merge d3.txt into d5.txt
+new d3.txt
+as bob insert 3 "flour {{embed:d6.txt}}"
+new d3.txt
+cd /
+open d5.txt
+mkdir f1
+as bob edit 5 "maple milk eggs eggs"
+as bob edit 3 "honey milk syrup flour maple"
+as alice insert 5 "pan maple"
+as alice add "milk"
+as bob add "cake cake sugar cake"
+unblock spam
+restore 2
+mkdir f2
+fork d1.txt d2.txt
+merge d4.txt into d4.txt
+as carol add "salt maple honey honey"
+save
+as alice add "syrup flour flour eggs"
+view c1
+discard
+as bob add "maple syrup oven honey [[d6.txt]]"
+similar 3 30
+as alice edit 8 "salt sugar eggs"
+restore 1
+new d5.txt
+merge d4.txt into d6.txt
+as alice edit 4 "maple sugar"
+as bob insert 10 "cake milk honey"
+as carol add "eggs honey milk cake"
+related 2
+restore 4
+backlinks
+save
+mkdir f1
+as carol insert 15 "salt eggs milk cake salt"
+save
+save
+as bob insert 11 "flour milk"
+new d6.txt
+cd f2
+mkdir f1
+cd /
+cd /
+open d2.txt
+discard
+as alice edit 1 "maple pan spam milk"
+as alice add "cake spam oven spam"
+as bob add "oven pan eggs"
+new d1.txt
+as alice add "salt salt honey"
+new d4.txt
+as carol edit 4 "salt syrup"
+rm d4.txt
+as carol add "cake salt"
+save
+discard
+open d5.txt
+as alice add "milk"
+as bob delete 17
+merge d4.txt into d6.txt
+props d4.txt
+new d4.txt
+merge d6.txt into d3.txt
+as carol add "milk cake cake pan pan"
+as bob add "syrup cake"
+open d1.txt
+as bob add "eggs oven eggs salt maple"
+open d3.txt
+as alice add "eggs"
+save
+as carol insert 1 "milk pan honey"
+as alice insert 2 "spam"
+as carol delete 3
+as bob edit 2 "sugar salt sugar"
+merge d2.txt into d3.txt
+cd ..
+mkdir f1
+restore 4
+as alice insert 3 "syrup spam salt"
+discard
+mkdir f2
+as bob add "pan maple"
+as carol add "oven oven syrup"
+cd /
+open d2.txt
+as carol insert 3 "flour oven"
+rm f2
+as bob insert 4 "pan honey spam"
+rm d1.txt
+as alice add "sugar honey pan salt {{embed:d5.txt}}"
+mkdir f2
+as carol insert 4 "maple"
+mkdir f2
+as bob add "milk pan honey pan"
+as bob edit 8 "syrup"
+merge d5.txt into d5.txt
+as bob add "sugar salt maple salt salt"
+as alice insert 7 "salt oven"
+merge d6.txt into d5.txt
+as carol add "oven spam flour honey maple [[d4.txt]]"
+unblock spam
+as bob add "milk"
+as bob delete 6
+fork d3.txt d2.txt
+as bob edit 13 "syrup cake milk"
+new d3.txt
+as alice edit 4 "salt"
+props d1.txt
+save
+as carol add "eggs salt maple"
+as alice embed d1.txt
+as bob edit 1 "sugar milk pan salt salt"
+ls
+cd /
+new d5.txt
+open d5.txt
+cd /
+merge d6.txt into d3.txt
+merge d6.txt into d4.txt
+open d6.txt
+new d5.txt
+as carol add "salt eggs [[d2.txt]]"
+save
+save
+new d2.txt
+as alice add "oven cake"
+save
+as bob add "spam sugar"
+save
+as bob insert 2 "eggs milk syrup"
+save
+as bob add "syrup flour spam cake spam"
+as carol add "cake spam"
+emptybin
+fork d1.txt d5.txt
+save
+open d4.txt
+new d5.txt
+save
+cd /
+fork d1.txt d6.txt
+cd /
+open d1.txt
+save
+as bob add "maple"
+new d6.txt
+as carol embed d6.txt
+as carol insert 2 "spam"
+save
+restore 2
+as bob insert 5 "flour"
+merge d6.txt into d1.txt
+as alice edit 2 "honey eggs milk sugar spam"
+open d5.txt
+as carol add "sugar milk cake"
+as carol add "sugar honey"
+as bob add "pan spam sugar sugar sugar"
+as alice edit 19 "flour"
+mkdir f1
+as alice add "flour sugar"
+as bob add "maple salt cake spam {{embed:d4.txt}}"
+fork d1.txt d6.txt
+as carol add "pan flour oven cake cake"
+as bob delete 11
+as carol add "salt cake"
+as carol add "pan milk salt pan"
+as bob add "milk syrup honey spam {{embed:d6.txt}}"
+discard
+as alice add "syrup oven syrup flour"
+as alice edit 1 "pan pan"
+as bob add "maple salt syrup syrup milk"
+as alice delete 12
+as alice delete 12
+as bob add "flour pan cake spam cake {{embed:d3.txt}}"
+merge d2.txt into d4.txt
+as carol add "pan flour spam maple maple [[d6.txt]]"
+as alice insert 8 "syrup sugar sugar cake"
+block spam
+log
+as alice add "syrup maple"
+as carol edit 19 "flour"
+bin
+as bob add "syrup spam salt"
+as carol edit 15 "maple"
+open d2.txt
+save
+as alice edit 2 "pan maple flour"
+merge d3.txt into d4.txt
+as carol add "eggs flour sugar oven"
+fork d6.txt d5.txt
+as bob add "salt salt sugar cake maple"
+as bob insert 15 "cake pan sugar syrup {{embed:d5.txt}}"
+bin
+as bob delete 14
+as bob add "flour spam sugar oven"
+orphans
+new d5.txt
+new d3.txt
+new d2.txt
+as bob add "maple cake pan"
+as bob edit 10 "maple pan flour spam"
+search salt
+open d2.txt
+fork d1.txt d6.txt
+props d4.txt
+block spam
+as bob add "oven"
+orphans
+as alice delete 2
+as alice edit 12 "eggs"
+as bob insert 14 "sugar sugar oven oven eggs"
+as bob delete 21
+as bob add "flour oven syrup cake spam"
+as bob add "oven cake sugar"
+as carol insert 22 "maple"
+discard
+save
+new d4.txt
+as carol edit 16 "syrup cake"
+discard
+as bob delete 7
+as carol edit 13 "pan pan"
+as carol edit 8 "pan cake cake sugar flour"
+new d2.txt
+merge d5.txt into d3.txt
+as bob delete 1
+star d2.txt
+as bob add "honey flour salt"
+show
+new d3.txt
+merge d6.txt into d2.txt
+fork d5.txt d4.txt
+bin
+as alice add "maple eggs cake honey {{embed:d3.txt}}"
+as bob add "maple syrup pan salt"
+save
+as bob add "eggs milk pan maple maple"
+backlinks
+new d5.txt
+as alice delete 17
+discard
+merge d4.txt into d3.txt
+as carol delete 9
+open d5.txt
+as alice add "spam flour"
+new d5.txt
+show
+open d5.txt
+as bob edit 20 "sugar cake"
+as carol add "honey"
+open d1.txt
+mkdir f2
+save
+new d5.txt
+as bob insert 2 "oven"
+as bob delete 5
+save
+similar 3 30
+as bob add "syrup spam flour honey cake"
+save
+cd ..
+new d1.txt
+open d4.txt
+merge d1.txt into d2.txt
+discard
+save
+save
+mkdir f2
+as bob insert 1 "oven maple"
+mkdir f2
+mkdir f2
+as bob delete 1
+as alice insert 1 "spam spam"
+cd f2
+cd ..

@@ -32,8 +32,6 @@ struct BPlus {
 
     explicit BPlus(int order) : m(order), root(0) {}
     ~BPlus() { freeRec(root); }
-    BPlus(const BPlus&) = delete;
-    BPlus& operator=(const BPlus&) = delete;
 
     int minLeaf() const { return m / 2; }          // ceil((m-1)/2)
     int minCh() const { return (m + 1) / 2; }      // ceil(m/2)

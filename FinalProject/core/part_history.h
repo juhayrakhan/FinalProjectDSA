@@ -4,7 +4,7 @@
 Commit* newCommit(Commit* p1, Commit* p2) {
     Commit* c = new Commit;
     c->num = ++nextCommit; c->p1 = p1; c->p2 = p2; c->tick = tick;
-    c->depth = p1 ? 1 + imax(p1->depth, p2 ? p2->depth : 0) : 0;
+    c->depth = p1 ? 1 + maxxx(p1->depth, p2 ? p2->depth : 0) : 0;
     c->bloom = new Bloom(bloomM, bloomK);
     if (p1) c->bloom->copyFrom(*p1->bloom);       // starts from a copy of the parent's filter
     if (p2) c->bloom->orWith(*p2->bloom);         // a merge ORs both parents' filters
@@ -93,7 +93,7 @@ void cmdView(const string& a) {
     bool ok = len(a) > 1 && a[0] == 'c' && parseInt(a.substr(1), k);
     if (!ok) { usage("view <commit>"); return; }
     Commit* found = 0;
-    for (Commit* c = cur->head; c; c = c->p1) if ((int)c->num == k) found = c;
+    for (Commit* c = cur->head; c; c = c->p1) if (c->num == k) found = c;
     if (!found) { err(a + " is not in the first-parent history of " + cur->node->name); return; }
     LineTree t;
     replay(found, t);
@@ -135,7 +135,7 @@ void cmdCommon(const string& a, const string& b) {
     for (int side = 0; side < 2; side++) {
         Array<Commit*>& L = side ? lb : la;
         Array<int> ids;
-        for (int i = 0; i < L.size(); i++) if ((side ? L[i]->markA != sa : L[i]->markB != sb)) ids.push((int)L[i]->num);
+        for (int i = 0; i < L.size(); i++) if ((side ? L[i]->markA != sa : L[i]->markB != sb)) ids.push(L[i]->num);
         stableSort(ids, [](int p1, int p2) { return p1 > p2; });
         string s = (side ? b : a) + " is " + plural(ids.size(), "commit") + " ahead";
         if (ids.size()) {

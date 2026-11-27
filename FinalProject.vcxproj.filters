@@ -1,28 +1,73 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClInclude Include="FinalProject\ds.h" />
     <ClInclude Include="FinalProject\tracker.h" />
-    <ClInclude Include="FinalProject\basic structures\avl.h" />
-    <ClInclude Include="FinalProject\basic structures\bloom.h" />
-    <ClInclude Include="FinalProject\basic structures\bplus.h" />
-    <ClInclude Include="FinalProject\core\engine.h" />
-    <ClInclude Include="FinalProject\core\part_core.h" />
-    <ClInclude Include="FinalProject\core\part_doc.h" />
-    <ClInclude Include="FinalProject\core\part_explorer.h" />
-    <ClInclude Include="FinalProject\core\part_history.h" />
-    <ClInclude Include="FinalProject\core\part_search.h" />
-    <ClInclude Include="FinalProject\core\part_tools.h" />
+    <ClInclude Include="FinalProject\core\engine.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="FinalProject\core\part_core.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="FinalProject\core\part_doc.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="FinalProject\core\part_explorer.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="FinalProject\core\part_history.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="FinalProject\core\part_search.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="FinalProject\core\part_tools.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="FinalProject\basic structures\avl.h">
+      <Filter>basicstructures</Filter>
+    </ClInclude>
+    <ClInclude Include="FinalProject\basic structures\bloom.h">
+      <Filter>basicstructures</Filter>
+    </ClInclude>
+    <ClInclude Include="FinalProject\basic structures\bplus.h">
+      <Filter>basicstructures</Filter>
+    </ClInclude>
+    <ClInclude Include="FinalProject\basic structures\ds.h">
+      <Filter>basicstructures</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FinalProject\main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="FinalProject\tests\bin.txt" />
-    <Text Include="FinalProject\tests\food.txt" />
-    <Text Include="FinalProject\tests\merge_a.txt" />
-    <Text Include="FinalProject\tests\merge_b.txt" />
-    <Text Include="FinalProject\tests\merge_c.txt" />
-    <Text Include="FinalProject\tests\misc.txt" />
+    <Text Include="FinalProject\tests\bin.txt">
+      <Filter>tests</Filter>
+    </Text>
+    <Text Include="FinalProject\tests\food.txt">
+      <Filter>tests</Filter>
+    </Text>
+    <Text Include="FinalProject\tests\merge_a.txt">
+      <Filter>tests</Filter>
+    </Text>
+    <Text Include="FinalProject\tests\merge_b.txt">
+      <Filter>tests</Filter>
+    </Text>
+    <Text Include="FinalProject\tests\merge_c.txt">
+      <Filter>tests</Filter>
+    </Text>
+    <Text Include="FinalProject\tests\misc.txt">
+      <Filter>tests</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="core">
+      <UniqueIdentifier>{1c62d3a9-6083-4c29-a9b4-427338dc738d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="basicstructures">
+      <UniqueIdentifier>{6c7f7cde-714b-4384-b281-c5c068c75eb3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="tests">
+      <UniqueIdentifier>{f51549a0-6aed-4e70-8c83-e4e62aa935a6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

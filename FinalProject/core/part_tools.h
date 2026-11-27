@@ -40,7 +40,7 @@ bool checkInner(Array<LineTree*>& sv) {
     // AVL trees and LineID maps
     for (int i = 0; i < docs.size(); i++) {
         if (!docs[i]->tree.verify(why)) {
-            int k = (int)why.find('|');
+            int k = why.find('|');
             return fail(why.substr(0, k), docs[i]->node->name + ", " + why.substr(k + 1));
         }
     }
@@ -50,7 +50,7 @@ bool checkInner(Array<LineTree*>& sv) {
     for (int i = 0; i < commits.nb; i++)
         for (HashMap<unsigned long long, Commit*, HId>::Node* x = commits.b[i]; x; x = x->next) {
             Commit* c = x->val;
-            int want = c->p1 ? 1 + imax(c->p1->depth, c->p2 ? c->p2->depth : 0) : 0;
+            int want = c->p1 ? 1 + maxxx(c->p1->depth, c->p2 ? c->p2->depth : 0) : 0;
             if (c->depth != want) return fail("dag-depth", cid(c->num) + " has depth " + num(c->depth) + ", expected " + num(want));
             if (c->p1) c->p1->chk++;
             if (c->p2) c->p2->chk++;
@@ -162,7 +162,7 @@ struct FuzzIn : Input {                        // answers merge prompts and reco
 };
 static int rnd(unsigned int& st, int n) {               // state = (state * 1103515245 + 12345) mod 2^31
     st = (unsigned int)(((unsigned long long)st * 1103515245ULL + 12345ULL) % 2147483648ULL);
-    return (int)((st >> 8) % (unsigned int)n);
+    return ((st >> 8) % (unsigned int)n);
 }
 static string genLine(Engine& e, unsigned int& st) {
     static const char* W[] = {"eggs", "flour", "milk", "honey", "maple", "syrup", "pan", "salt", "sugar", "cake", "spam", "oven"};

@@ -7,7 +7,7 @@ static bool validRef(const string& t) {
     int i = 1;
     if (i >= len(t)) return false;
     while (i <= len(t)) {
-        int j = (int)t.find('/', i);
+        int j = t.find('/', i);
         if (j < 0) j = len(t);
         if (!validName(t.substr(i, j - i))) return false;
         i = j + 1;
@@ -24,10 +24,10 @@ static void scanRefs(const string& text, int kind, Array<string>& out) {
     string op = kind ? "{{embed:" : "[[", cl = kind ? "}}" : "]]";
     int i = 0;
     for (;;) {
-        int a = (int)text.find(op, i);
+        int a = text.find(op, i);
         if (a < 0) break;
         int s = a + len(op);
-        int e = (int)text.find(cl, s);
+        int e = text.find(cl, s);
         if (e < 0) break;
         string t = text.substr(s, e - s);
         if (validRef(t)) { out.push(t); i = e + 2; } else i = a + 1;
@@ -333,7 +333,7 @@ void cmdSimilar(Array<string>& t) {
             pairCounts(sh[i], sh[j], ab, ba, eab, eba);
             double est = pickFrac(ab, sh[i].n, ba, sh[j].n);
             if (est < pct / 100.0) continue;
-            HeapItem it; it.score = est; it.visit = visit; it.a = i; it.b = j;
+            HeapItem it; it.score = est; it.visit = visit; it.arr = i; it.b = j;
             heap.offer(it);
         }
     if (heap.h.size() == 0) pl("no pairs at or above " + num(pct) + "%");
@@ -342,7 +342,7 @@ void cmdSimilar(Array<string>& t) {
         while (heap.h.size()) res.push(heap.popMin());
         pl("rank A B bloom exact note");
         for (int r = res.size() - 1, rank = 1; r >= 0; r--, rank++) {
-            Sh& A = sh[res[r].a]; Sh& B = sh[res[r].b];
+            Sh& A = sh[res[r].arr]; Sh& B = sh[res[r].b];
             long ab, ba, eab, eba;
             pairCounts(A, B, ab, ba, eab, eba);
             long bn, bd, en, ed;

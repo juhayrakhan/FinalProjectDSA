@@ -15,13 +15,11 @@ struct LineTree {
     HashMap<unsigned long long, LNode*, HId> ids;
     LineTree() : root(0) {}
     ~LineTree() { freeRec(root); }
-    LineTree(const LineTree&) = delete;
-    LineTree& operator=(const LineTree&) = delete;
 
     static void freeRec(LNode* n) { if (!n) return; freeRec(n->l); freeRec(n->r); delete n; }
     static int H(LNode* n) { return n ? n->h : 0; }
     static int S(LNode* n) { return n ? n->sz : 0; }
-    static void upd(LNode* n) { n->h = 1 + imax(H(n->l), H(n->r)); n->sz = 1 + S(n->l) + S(n->r); }
+    static void upd(LNode* n) { n->h = 1 + maxxx(H(n->l), H(n->r)); n->sz = 1 + S(n->l) + S(n->r); }
     int size() const { return root ? root->sz : 0; }
     LNode* find(unsigned long long id) const { LNode** x = ids.find(id); return x ? *x : 0; }
 
@@ -144,7 +142,7 @@ struct LineTree {
         if (!chk(n->l, why, cnt) || !chk(n->r, why, cnt)) return false;
         int bf = H(n->l) - H(n->r);
         if (bf > 1 || bf < -1) { why = "avl-balance|" + nm + ", balance factor " + to_string(bf); return false; }
-        if (n->h != 1 + imax(H(n->l), H(n->r))) { why = "avl-height|" + nm + ", wrong height"; return false; }
+        if (n->h != 1 + maxxx(H(n->l), H(n->r))) { why = "avl-height|" + nm + ", wrong height"; return false; }
         if (n->sz != 1 + S(n->l) + S(n->r)) { why = "avl-size|" + nm + ", wrong subtree size"; return false; }
         LNode** m = ids.find(n->id);
         if (!m || *m != n) { why = "lineid-map|" + nm + " is not mapped to its node"; return false; }

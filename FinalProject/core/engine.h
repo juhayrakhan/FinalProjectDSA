@@ -5,7 +5,7 @@
 #include <iostream>
 #include <fstream>
 #include <cstdio>
-#include "../ds.h"
+#include "../basic structures/ds.h"
 #include "../basic structures/bloom.h"
 #include "../basic structures/avl.h"
 #include "../basic structures/bplus.h"
@@ -118,8 +118,6 @@ struct Engine {
         for (int i = 0; i < bin.size(); i++) { freeFN(bin[i]->node); delete bin[i]; }
         freeFN(root);
     }
-    Engine(const Engine&) = delete;
-    Engine& operator=(const Engine&) = delete;
 
 #include "part_core.h"
 #include "part_explorer.h"

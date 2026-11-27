@@ -7,13 +7,11 @@ struct Bloom {
     unsigned int m, k;
     unsigned char* bits;
     Bloom(unsigned int mm, unsigned int kk) : m(mm), k(kk) {
-        int nb = (int)((m + 7) / 8);
+        int nb = ((m + 7) / 8);
         bits = new unsigned char[nb];
         for (int i = 0; i < nb; i++) bits[i] = 0;
     }
     ~Bloom() { delete[] bits; }
-    Bloom(const Bloom&) = delete;
-    Bloom& operator=(const Bloom&) = delete;
     void add(const string& t) {
         unsigned int h1 = fnv1a(t), h2 = djb2(t) | 1u;
         for (unsigned int i = 0; i < k; i++) {
@@ -30,11 +28,11 @@ struct Bloom {
         return true;
     }
     void orWith(const Bloom& o) {
-        int nb = (int)((m + 7) / 8);
+        int nb = ((m + 7) / 8);
         for (int i = 0; i < nb; i++) bits[i] = (unsigned char)(bits[i] | o.bits[i]);
     }
     void copyFrom(const Bloom& o) {
-        int nb = (int)((m + 7) / 8);
+        int nb = ((m + 7) / 8);
         for (int i = 0; i < nb; i++) bits[i] = o.bits[i];
     }
 };
@@ -47,8 +45,6 @@ struct CountingBloom {
         for (unsigned int i = 0; i < m; i++) c[i] = 0;
     }
     ~CountingBloom() { delete[] c; }
-    CountingBloom(const CountingBloom&) = delete;
-    CountingBloom& operator=(const CountingBloom&) = delete;
     unsigned long long pos(const string& t, unsigned int i) const {
         return ((unsigned long long)fnv1a(t) + (unsigned long long)i * (unsigned long long)(djb2(t) | 1u)) % m;
     }
