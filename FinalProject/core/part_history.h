@@ -80,7 +80,7 @@ void cmdLog() {
             s += " ops " + num(c->ops.size());
             if (c->p2) s += " merges " + cid(c->p2->num);
             DynamicArray<string> au;
-            for (int i = 0; i < c->ops.size(); i++) if (!hasTok(au, c->ops.get(i).author)) au.push(c->ops.get(i).author);
+            for (int i = 0; i < c->ops.size(); i++) if (!hasTok(au, c->ops.get(i).currentauthor)) au.push(c->ops.get(i).currentauthor);
             s += " authors ";
             for (int i = 0; i < au.size(); i++) s += (i ? ", " : "") + au[i];
         }
@@ -185,7 +185,7 @@ void cmdMerge(const string& inName, const string& tgName) {
     HashMap<unsigned long long, Touch, HId> touched;
     for (Commit* c = tg->head; c && c->markB != sb; c = c->p1) {
         for (int i = c->ops.size() - 1; i >= 0; i--) {
-            Op& o = c->ops.get(i);
+            Operation& o = c->ops.get(i);
             if (o.type == OP_INS || touched.find(o.id)) continue;
             Touch tc; tc.kind = o.type == OP_EDIT ? 1 : 2; tc.prev = o.anchor;
             touched.put(o.id, tc);
@@ -193,14 +193,14 @@ void cmdMerge(const string& inName, const string& tgName) {
     }
     LineTree work;                                 // working copy: abort simply frees it
     work.copyFrom(tg->tree);
-    CircularQueue<Op> applied;
+    CircularQueue<Operation> applied;
     HashMap<unsigned long long, int, HId> dec;
     int nApp = 0, nSkip = 0, nKept = 0, nNote = 0;
     bool aborted = false;
     while (!stk.empty() && !aborted) {
         Commit* c = stk.pop();
         for (int i = 0; i < c->ops.size() && !aborted; i++) {
-            Op& o = c->ops.get(i);                 // iterated with get(i), never popped
+            Operation& o = c->ops.get(i);                 // iterated with get(i), never popped
             if (o.type == OP_INS) {
                 if (work.find(o.id)) { nSkip++; continue; }
                 unsigned long long anchorUsed = o.anchor; LNode* a = 0;
@@ -211,8 +211,8 @@ void cmdMerge(const string& inName, const string& tgName) {
                         pl("note: " + lid(o.id) + " appended at the end because its anchor " + lid(o.anchor) + " no longer exists");
                     }
                 }
-                LNode* nn = work.insertAfter(a, o.id, o.newText, o.author);
-                Op r; r.type = OP_INS; r.id = o.id; r.anchor = anchorUsed; r.newText = o.newText; r.author = o.author;
+                LNode* nn = work.insertAfter(a, o.id, o.newText, o.currentauthor);
+                Operation r; r.type = OP_INS; r.id = o.id; r.anchor = anchorUsed; r.newText = o.newText; r.currentauthor = o.currentauthor;
                 applied.push(r); nApp++;
                 warnText(work.rank(nn), o.newText);
             } else if (o.type == OP_DEL) {
@@ -224,8 +224,8 @@ void cmdMerge(const string& inName, const string& tgName) {
                     if (ch == 0) { nKept++; continue; }
                 }
                 int rk = work.rank(n);
-                Op r; r.type = OP_DEL; r.id = o.id; r.anchor = rk > 1 ? work.select(rk - 1)->id : 0;
-                r.oldText = n->text; r.oldAuthor = n->author; r.author = o.author;
+                Operation r; r.type = OP_DEL; r.id = o.id; r.anchor = rk > 1 ? work.select(rk - 1)->id : 0;
+                r.oldText = n->text; r.originalauthor = n->author; r.currentauthor = o.currentauthor;
                 work.erase(n);
                 applied.push(r); nApp++;
             } else {
@@ -239,8 +239,8 @@ void cmdMerge(const string& inName, const string& tgName) {
                     if (ch == 0) { nKept++; continue; }
                     LNode* a = 0;                  // take: re-insert after the DeleteLine's prevLineID
                     if (tc->prev) { a = work.find(tc->prev); if (!a) a = work.last(); }
-                    LNode* nn = work.insertAfter(a, o.id, o.newText, o.author);
-                    Op r; r.type = OP_INS; r.id = o.id; r.anchor = a ? a->id : 0; r.newText = o.newText; r.author = o.author;
+                    LNode* nn = work.insertAfter(a, o.id, o.newText, o.currentauthor);
+                    Operation r; r.type = OP_INS; r.id = o.id; r.anchor = a ? a->id : 0; r.newText = o.newText; r.currentauthor = o.currentauthor;
                     applied.push(r); nApp++;
                     warnText(work.rank(nn), o.newText);
                     continue;
@@ -250,9 +250,9 @@ void cmdMerge(const string& inName, const string& tgName) {
                     if (ch == 2) { aborted = true; break; }
                     if (ch == 0) { nKept++; continue; }
                 }
-                Op r; r.type = OP_EDIT; r.id = o.id; r.oldText = n->text; r.newText = o.newText;
-                r.oldAuthor = n->author; r.author = o.author;
-                n->text = o.newText; n->author = o.author;
+                Operation r; r.type = OP_EDIT; r.id = o.id; r.oldText = n->text; r.newText = o.newText;
+                r.originalauthor = n->author; r.currentauthor = o.currentauthor;
+                n->text = o.newText; n->author = o.currentauthor;
                 applied.push(r); nApp++;
                 warnText(work.rank(n), o.newText);
             }

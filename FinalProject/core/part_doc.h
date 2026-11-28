@@ -25,50 +25,50 @@ void killDoc(Doc* d) {                         // permanent deletion (emptybin)
 }
 
 // ---------------------------------------------------------------- applying operations to a tree
-static void applyFwd(LineTree& t, const Op& o) {
+static void applyFwd(LineTree& t, const Operation& o) {
     if (o.type == OP_INS) {
         LNode* a = o.anchor ? t.find(o.anchor) : 0;
         if (o.anchor && !a) a = t.last();
-        t.insertAfter(a, o.id, o.newText, o.author);
+        t.insertAfter(a, o.id, o.newText, o.currentauthor);
     } else if (o.type == OP_DEL) {
         LNode* n = t.find(o.id);
         if (n) t.erase(n);
     } else {
         LNode* n = t.find(o.id);
-        if (n) { n->text = o.newText; n->author = o.author; }
+        if (n) { n->text = o.newText; n->author = o.currentauthor; }
     }
 }
-static void applyInv(LineTree& t, const Op& o) {
+static void applyInv(LineTree& t, const Operation& o) {
     if (o.type == OP_INS) {
         LNode* n = t.find(o.id);
         if (n) t.erase(n);
     } else if (o.type == OP_DEL) {
         LNode* a = o.anchor ? t.find(o.anchor) : 0;
         if (o.anchor && !a) a = t.last();
-        t.insertAfter(a, o.id, o.oldText, o.oldAuthor);
+        t.insertAfter(a, o.id, o.oldText, o.originalauthor);
     } else {
         LNode* n = t.find(o.id);
-        if (n) { n->text = o.oldText; n->author = o.oldAuthor; }
+        if (n) { n->text = o.oldText; n->author = o.originalauthor; }
     }
 }
 
-// ---------------------------------------------------------------- the "as <author> ..." commands
+// ---------------------------------------------------------------- the "as <currentauthor> ..." commands
 void cmdAs(DynamicArray<string>& t, const string& tail) {
-    if (t.size() < 3) { usage("as <author> add|insert|edit|delete|embed ..."); return; }
+    if (t.size() < 3) { usage("as <currentauthor> add|insert|edit|delete|embed ..."); return; }
     const string& sub = t[2];
-    const string& author = t[1];
+    const string& currentauthor = t[1];
     bool hasText = sub == "add" || sub == "insert" || sub == "edit";
     int need = sub == "add" ? 3 : (sub == "insert" || sub == "edit" || sub == "delete" || sub == "embed") ? 4 : -1;
-    if (need < 0) { usage("as <author> add|insert|edit|delete|embed ..."); return; }
-    string us = sub == "add" ? "as <author> add \"text\"" : sub == "insert" ? "as <author> insert <n> \"text\"" :
-             sub == "edit" ? "as <author> edit <n> \"text\"" : sub == "delete" ? "as <author> delete <n>" :
-             "as <author> embed <name>";
+    if (need < 0) { usage("as <currentauthor> add|insert|edit|delete|embed ..."); return; }
+    string us = sub == "add" ? "as <currentauthor> add \"text\"" : sub == "insert" ? "as <currentauthor> insert <n> \"text\"" :
+             sub == "edit" ? "as <currentauthor> edit <n> \"text\"" : sub == "delete" ? "as <currentauthor> delete <n>" :
+             "as <currentauthor> embed <name>";
     if (!hasText) { if (t.size() != need || !tail.empty()) { usage(us); return; } }
     else if (t.size() < need || (t.size() == need && tail.empty())) { usage(us); return; }
-    if (!validAuthor(author)) { err("invalid author \"" + author + "\""); return; }
+    if (!validAuthor(currentauthor)) { err("invalid currentauthor \"" + currentauthor + "\""); return; }
     if (!cur) { err("no document is open"); return; }
     Doc* d = cur;
-    if (sub == "embed") { cmdEmbed(d, author, t[3]); return; }
+    if (sub == "embed") { cmdEmbed(d, currentauthor, t[3]); return; }
     int n = 0;
     if (sub != "add" && !parseInt(t[3], n)) { usage(us); return; }
     string text;
@@ -84,35 +84,35 @@ void cmdAs(DynamicArray<string>& t, const string& tail) {
             return;
         }
         if (lines >= 5000) { err("limit of 5000 lines per document reached"); return; }
-        doInsert(d, pos, text, author);
+        doInsert(d, pos, text, currentauthor);
         return;
     }
     if (n < 1 || n > lines) { err("line " + num(n) + " does not exist (the document has " + num(lines) + " lines)"); return; }
     LNode* x = d->tree.select(n);
     if (sub == "edit") {
-        Op o; o.type = OP_EDIT; o.id = x->id; o.oldText = x->text; o.newText = text; o.oldAuthor = x->author; o.author = author;
-        x->text = text; x->author = author;
+        Operation o; o.type = OP_EDIT; o.id = x->id; o.oldText = x->text; o.newText = text; o.originalauthor = x->author; o.currentauthor = currentauthor;
+        x->text = text; x->author = currentauthor;
         d->staged.push(o);
         pl("staged EditLine(" + lid(o.id) + ")");
         warnText(n, text);
     } else {
-        Op o; o.type = OP_DEL; o.id = x->id; o.anchor = n > 1 ? d->tree.select(n - 1)->id : 0;
-        o.oldText = x->text; o.oldAuthor = x->author; o.author = author;
+        Operation o; o.type = OP_DEL; o.id = x->id; o.anchor = n > 1 ? d->tree.select(n - 1)->id : 0;
+        o.oldText = x->text; o.originalauthor = x->author; o.currentauthor = currentauthor;
         d->tree.erase(x);
         d->staged.push(o);
         pl("staged DeleteLine(" + lid(o.id) + ")");
     }
 }
-void doInsert(Doc* d, int pos, const string& text, const string& author) {
+void doInsert(Doc* d, int pos, const string& text, const string& currentauthor) {
     LNode* anchor = pos > 1 ? d->tree.select(pos - 1) : 0;
     unsigned long long id = ++nextLine;
-    Op o; o.type = OP_INS; o.id = id; o.anchor = anchor ? anchor->id : 0; o.newText = text; o.author = author;
-    LNode* nn = d->tree.insertAfter(anchor, id, text, author);
+    Operation o; o.type = OP_INS; o.id = id; o.anchor = anchor ? anchor->id : 0; o.newText = text; o.currentauthor = currentauthor;
+    LNode* nn = d->tree.insertAfter(anchor, id, text, currentauthor);
     d->staged.push(o);
     pl("staged InsertLine(" + lid(id) + ")");
     warnText(d->tree.rank(nn), text);
 }
-void cmdEmbed(Doc* d, const string& author, const string& name) {
+void cmdEmbed(Doc* d, const string& currentauthor, const string& name) {
     if (!validRef(name)) { err("invalid name \"" + name + "\""); return; }
     string text = "{{embed:" + name + "}}";
     if (len(text) > 200) { err("line text is longer than 200 characters"); return; }
@@ -124,7 +124,7 @@ void cmdEmbed(Doc* d, const string& author, const string& name) {
         pl("  " + cyc);
         return;
     }
-    doInsert(d, d->tree.size() + 1, text, author);
+    doInsert(d, d->tree.size() + 1, text, currentauthor);
 }
 
 // ---------------------------------------------------------------- show / authors / tac
@@ -186,10 +186,10 @@ void cmdTac(const string& a) {
 }
 
 // ---------------------------------------------------------------- save / discard
-void bloomOps(Bloom* b, CircularQueue<Op>& ops) {
+void bloomOps(Bloom* b, CircularQueue<Operation>& ops) {
     DynamicArray<string> tk;
     for (int i = 0; i < ops.size(); i++) {
-        Op& o = ops.get(i);
+        Operation& o = ops.get(i);
         if (o.type == OP_DEL) continue;
         tokenize(o.newText, tk);
         for (int j = 0; j < tk.size(); j++) b->add(tk[j]);

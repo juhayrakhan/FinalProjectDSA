@@ -11,27 +11,30 @@ using namespace std;
 
 const int OP_INS = 0, OP_DEL = 1, OP_EDIT = 2;
 
-// One operation. InsertLine: id=new line, anchor=line above, newText, author.
-// DeleteLine: id, anchor=prevLineID, oldText, oldAuthor (author = who deleted, for the log).
-// EditLine: id, oldText, newText, oldAuthor, author.
-struct Op {
-    int type; unsigned long long id, anchor;
-    string oldText, newText, oldAuthor, author;
-    Op() : type(0), id(0), anchor(0) {}
+// One operation. InsertLine: id=new line, anchor=line above, newText, currentauthor.
+// DeleteLine: id, anchor=prevLineID, oldText, originalauthor (currentauthor = who deleted, for the log).
+// EditLine: id, oldText, newText, originalauthor, currentauthor.
+struct Operation {
+    int type;
+    unsigned long long id, anchor;
+    string oldText, newText;
+    string originalauthor, currentauthor;
+    Operation(): type(0), id(0), anchor(0) {}
 };
 
 struct Commit {
     unsigned int num; Commit *p1, *p2;
     int tick, depth;
-    CircularQueue<Op> ops;
+    CircularQueue<Operation> ops;
     Bloom* bloom;
     int refs;                 // child commits + document heads
     int markA, markB, chk;    // traversal stamps / checker scratch
-    Commit() : num(0), p1(0), p2(0), tick(0), depth(0), bloom(0), refs(0), markA(0), markB(0), chk(0) {}
+    Commit(): num(0), p1(0), p2(0), tick(0), depth(0), bloom(0), refs(0), markA(0), markB(0), chk(0) {}
     ~Commit() { delete bloom; }
 };
 
 struct Doc;
+
 struct FNode {                // explorer (N-ary tree) node
     string name, path;
     bool file, starred;
@@ -40,24 +43,28 @@ struct FNode {                // explorer (N-ary tree) node
     Doc* doc;
     FNode() : file(false), starred(false), parent(0), doc(0) {}
 };
+
 struct Edge { unsigned int other; int count; };
 struct Unres { string path; int count; };
 
 struct Doc {
     unsigned int id; FNode* node;
     LineTree tree;            // working text
-    CircularQueue<Op> staged;
+    CircularQueue<Operation> staged;
     Commit* head;
     int lastMod;
     bool inBin;
     DynamicArray<Edge> out[2], in[2];     // [0] links, [1] embeds
     DynamicArray<Unres> unres[2];
     int visit; Doc* par; bool expanding;
-    Doc() : id(0), node(0), head(0), lastMod(0), inBin(false), visit(0), par(0), expanding(false) {}
+    Doc(): id(0), node(0), head(0), lastMod(0), inBin(false), visit(0), par(0), expanding(false) {}
 };
+
 struct BinItem { int num; FNode* node; string origParent; string origName; };
 struct Delta { int k; string path; int d; };
-struct Touch { int kind; unsigned long long prev; };        // kind 1 = edited, 2 = deleted on the target
+
+// kind 1 = edited, 2 = deleted on the target
+struct Touch { int kind; unsigned long long prev; };
 
 struct Input {                // source of command lines (keyboard, script, fuzzer answers)
     virtual bool line(string& out) = 0;
@@ -83,7 +90,8 @@ struct FileInput : Input {
     bool isScript() override { return true; }
 };
 
-struct Engine {
+class Engine {
+public:
     int bpOrder; bool quiet;
     int tick; unsigned long long nextLine; unsigned int nextFile, nextCommit;
     int binCtr, stampCtr, visitCtr;

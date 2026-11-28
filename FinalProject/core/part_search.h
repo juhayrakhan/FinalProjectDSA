@@ -121,10 +121,10 @@ void textDeltas(Doc* doc, const string& text, int sign, DynamicArray<Delta>& out
     }
 }
 // updates both graphs from saved ops; an embed cycle rejects everything and rolls back
-bool applyGraphOps(Doc* d, CircularQueue<Op>& ops, string& cyc) {
+bool applyGraphOps(Doc* d, CircularQueue<Operation>& ops, string& cyc) {
     DynamicArray<Delta> ds;
     for (int i = 0; i < ops.size(); i++) {
-        Op& o = ops.get(i);
+        Operation& o = ops.get(i);
         if (o.type == OP_INS) textDeltas(d, o.newText, 1, ds);
         else if (o.type == OP_DEL) textDeltas(d, o.oldText, -1, ds);
         else { textDeltas(d, o.oldText, -1, ds); textDeltas(d, o.newText, 1, ds); }
@@ -198,9 +198,9 @@ void idxDel(Doc* d, unsigned long long line, const string& text) {
     Posting p; p.file = d->id; p.line = line;
     for (int i = 0; i < tk.size(); i++) index.remove(tk[i], p);
 }
-void indexOps(Doc* d, CircularQueue<Op>& ops) {
+void indexOps(Doc* d, CircularQueue<Operation>& ops) {
     for (int i = 0; i < ops.size(); i++) {
-        Op& o = ops.get(i);
+        Operation& o = ops.get(i);
         if (o.type == OP_INS) idxAdd(d, o.id, o.newText);
         else if (o.type == OP_DEL) idxDel(d, o.id, o.oldText);
         else {
