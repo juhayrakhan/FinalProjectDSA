@@ -26,3 +26,12 @@ int main(int argc, char** argv) {
     if (live != 0) { cout << "LEAK: " << live << " live allocations\n"; return 1; }
     return rc;
 }
+
+
+/// Changes to be done
+/// 1. remove tracker.h implementation
+/// 2. repurpose engine.h to include tracker.h
+/// 3. jese direcxtx3d11 ka by reference return hey, use that to track allocation
+/// 4. non ai these files:
+///     bloom, avl, bplus, all of engine
+/// 5. remove args from main
